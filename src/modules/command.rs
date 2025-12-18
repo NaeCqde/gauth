@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand, ColorChoice};
-use clap::builder::styling::{AnsiColor, Effects, Styles};
+use clap::builder::styling::{AnsiColor, Styles};
 
 // 独自のカラースタイルを定義
 fn styles()->Styles { Styles::styled()
