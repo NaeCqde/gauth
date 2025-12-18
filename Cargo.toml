@@ -4,16 +4,15 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-clap = { version = "4.5", features = ["derive"] }
-totp-rs = { version = "5.7", features = ["qr", "serde"] }
-keyring = "3.6"
-aes-gcm = "0.10"
-argon2 = "0.5"
-dialoguer = "0.12"
+clap = { version = "4.5.53", features = ["derive"] }
+totp-rs = { version = "5.7.0", features = ["qr", "rand", "serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-rand = "0.9.2"
-qr2term = "0.3.3"
-indicatif = "0.18.3"
-base32 = "0.5.1"
-
+indicatif = "0.17"
+aes-gcm = "0.10"
+pbkdf2 = "0.12"
+rand_core = { version = "0.6", features = ["getrandom"] }
+sha2 = "0.10"
+rpassword = "2.0"
+ratatui = "0.26"
+crossterm = { version = "0.27", features = ["event-stream", "serde"] }
