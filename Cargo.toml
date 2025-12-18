@@ -4,15 +4,3 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-clap = { version = "4.5.53", features = ["derive"] }
-totp-rs = { version = "5.7.0", features = ["qr", "rand", "serde"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-indicatif = "0.17"
-aes-gcm = "0.10"
-pbkdf2 = "0.12"
-rand_core = { version = "0.6", features = ["getrandom"] }
-sha2 = "0.10"
-rpassword = "2.0"
-ratatui = "0.26"
-crossterm = { version = "0.27", features = ["event-stream", "serde"] }
