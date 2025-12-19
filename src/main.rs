@@ -1,27 +1,27 @@
 use clap::Parser;
-use gauth::{command, auth, ui};
+use gauth::{args, auth, ui};
 
 fn main() {
-    let args = command::Args::parse();
+    let args = args::Args::parse();
 
     match args.command {
-        command::Commands::Auth { action } => {
+        args::Commands::Auth { action } => {
             match action {
-                command::AuthAction::Add { name, key } => {
+                args::AuthAction::Add { name, key } => {
                     auth::add(name, key);
                 }
-                command::AuthAction::List => {
+                args::AuthAction::List => {
                     auth::list();
                 }
-                command::AuthAction::Del { name } => {
+                args::AuthAction::Del { name } => {
                     auth::del(name);
                 }
-                command::AuthAction::Show { name } => {
+                args::AuthAction::Show { name } => {
                     auth::show(name);
                 }
             }
         }
-        command::Commands::Ui => {
+        args::Commands::Ui => {
             ui::run_ui_mode();
         }
     }
