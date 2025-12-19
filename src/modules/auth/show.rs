@@ -37,18 +37,31 @@ pub fn show(name: String) -> Result<(), AppError> {
                     AppError::GeneralError(format!("Failed to generate TOTP code: {}", e))
                 })?;
 
-                let pb = ProgressBar::new(30);
-                pb.set_style(
-                    ProgressStyle::default_bar()
-                        .template("{msg} [{eta_precise}] {bar:40.cyan/blue}")
-                        .unwrap()
-                        .progress_chars("##-"),
-                );
-                pb.set_message(format!("TOTP Code for {}: {}", name, code));
+                let default_style = ProgressStyle::default_bar()
+                    .template("{msg} {bar:40.cyan/blue}")
+                    .unwrap()
+                    .progress_chars("##-");
 
-                for _ in 0..time_until_next_code {
-                    pb.inc(1);
-                    thread::sleep(Duration::from_secs(1));
+                let red_style = ProgressStyle::default_bar()
+                    .template("{msg} {bar:40.red/blue}")
+                    .unwrap()
+                    .progress_chars("##-");
+
+                let pb = ProgressBar::new(30);
+                pb.set_style(default_style.clone()); // Start with default style
+
+                for i in (0..=time_until_next_code).rev() {
+                    if i <= 10 && i > 0 { // Apply red style if 10s or less remain (excluding 0s for message display)
+                        pb.set_style(red_style.clone());
+                    } else { // Otherwise, ensure default style is used
+                        pb.set_style(default_style.clone());
+                    }
+
+                    pb.set_message(format!("TOTP Code for {}: {} ({}s)", name, code, i));
+                    pb.set_position(i);
+                    if i > 0 {
+                        thread::sleep(Duration::from_secs(1));
+                    }
                 }
                 pb.finish_and_clear();
             }
