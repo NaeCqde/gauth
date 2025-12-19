@@ -8,16 +8,16 @@ fn main() {
         command::Commands::Auth { action } => {
             match action {
                 command::AuthAction::Add { name, key } => {
-                    auth::add_secret(name, key);
+                    auth::add(name, key);
                 }
                 command::AuthAction::List => {
-                    auth::list_secrets();
+                    auth::list();
                 }
                 command::AuthAction::Del { name } => {
-                    auth::delete_secret(name);
+                    auth::del(name);
                 }
                 command::AuthAction::Show { name } => {
-                    auth::show_code(name);
+                    auth::show(name);
                 }
             }
         }
