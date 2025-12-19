@@ -8,4 +8,6 @@ pub enum AppError {
     SecretManagerError(String),
     #[error("Io Error: {0}")]
     IoError(#[from] std::io::Error),
+    #[error("Keyring Error: {0}")]
+    KeyringError(#[from] keyring::Error),
 }

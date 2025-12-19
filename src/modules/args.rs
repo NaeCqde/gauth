@@ -1,12 +1,13 @@
-use clap::{Parser, Subcommand, ColorChoice};
 use clap::builder::styling::{AnsiColor, Styles};
+use clap::{ColorChoice, Parser, Subcommand};
 
 // 独自のカラースタイルを定義
-fn styles()->Styles { Styles::styled()
-    .header(AnsiColor::Yellow.on_default())
-    .usage(AnsiColor::Green.on_default())
-    .literal(AnsiColor::Green.on_default())
-    .placeholder(AnsiColor::Green.on_default())
+fn styles() -> Styles {
+    Styles::styled()
+        .header(AnsiColor::Yellow.on_default())
+        .usage(AnsiColor::Green.on_default())
+        .literal(AnsiColor::Green.on_default())
+        .placeholder(AnsiColor::Green.on_default())
 }
 #[derive(Parser, Debug)]
 #[command(
@@ -15,7 +16,7 @@ fn styles()->Styles { Styles::styled()
     about = "Google Authenticator CLI",
     // ここでスタイルとカラーの強制適用を設定
     styles = styles(),
-    color = ColorChoice::Always 
+    color = ColorChoice::Always
 )]
 pub struct Args {
     #[command(subcommand)]
