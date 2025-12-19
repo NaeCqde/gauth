@@ -18,12 +18,7 @@ pub fn show(name: String) -> Result<(), AppError> {
                 &credential.ciphertext,
                 &credential.nonce,
             )?;
-            let b32_key = base32::encode(
-                base32::Alphabet::Rfc4648 { padding: true },
-                &plaintext_bytes,
-            );
-
-            let totp_instance = TOTP::new(Algorithm::SHA1, 6, 1, 30, b32_key.clone().into())
+            let totp_instance = TOTP::new(Algorithm::SHA1, 6, 1, 30, plaintext_bytes)
                 .map_err(|e| AppError::GeneralError(format!("Failed to create TOTP: {}", e)))?;
 
             loop {

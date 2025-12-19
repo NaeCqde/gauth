@@ -18,9 +18,13 @@ pub fn add(name: Option<String>, key: Option<String>) -> Result<(), AppError> {
             .interact()
             .unwrap(),
     };
-    let key = key.trim().replace(" ", "");
-    let bin = base32::decode(base32::Alphabet::Rfc4648Lower { padding: false }, &key)
-        .ok_or(AppError::InvalidKey)?;
+    // -- add.rs --
+    let key = key.trim().replace(" ", "").to_uppercase(); // 大文字に統一
+    let bin = base32::decode(
+        base32::Alphabet::Rfc4648 { padding: true }, // 標準的な設定（padding: trueで両方対応可）
+        &key,
+    )
+    .ok_or(AppError::InvalidKey)?;
 
     let master_password = secrets::get_master_password()?;
     let master_password_bytes = master_password.as_bytes();
