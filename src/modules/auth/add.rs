@@ -1,6 +1,7 @@
 use dialoguer::{Input, Password, theme::ColorfulTheme};
 
 use crate::error::AppError;
+use crate::secrets::{self, SecretManager};
 
 pub fn add(name: Option<String>, key: Option<String>) -> Result<(), AppError> {
     let name = match name {
@@ -17,12 +18,19 @@ pub fn add(name: Option<String>, key: Option<String>) -> Result<(), AppError> {
             .interact()
             .unwrap(),
     };
-    let bin = base32::decode(base32::Alphabet::Rfc4648Lower { padding: true }, &key);
-    if bin.is_none() {
-        return Err(AppError::InvalidKey);
-    }
-    let entry = keyring::Entry::new("gauth", &name)?;
-    entry.set_password(&key)?;
+    let key = key.trim().replace(" ", "");
+    let bin = base32::decode(base32::Alphabet::Rfc4648Lower { padding: false }, &key)
+        .ok_or(AppError::InvalidKey)?;
+
+    let master_password = secrets::get_master_password()?;
+    let master_password_bytes = master_password.as_bytes();
+
+    let (ciphertext, nonce) = secrets::encrypt_data(master_password_bytes, &bin)?;
+
+    let mut secret_manager = SecretManager::load_secrets(&master_password)?;
+    secret_manager.add_credential(name.clone(), ciphertext, nonce);
+    secret_manager.save_secrets(&master_password)?;
+
     println!("Successfully added auth: {}", name);
     Ok(())
 }

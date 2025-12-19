@@ -9,3 +9,11 @@ clap = { version = "4.5.53", features = ["derive"] }
 dialoguer = "0.12.0"
 keyring = { version = "3.6.3", features = ["apple-native", "windows-native", "linux-native"] }
 thiserror = "1.0"
+aes-gcm = { version = "0.10.1", features = ["aes"] }
+rand_core = { version = "0.6.4", features = ["getrandom"] }
+rand_chacha = "0.3.1"
+chacha20poly1305 = "0.10.1"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8.12"
+dirs = "5.0.1"
+sha2 = "0.10.8"
