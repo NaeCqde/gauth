@@ -8,14 +8,14 @@ base32 = "0.5.1"
 clap = { version = "4.5.53", features = ["derive"] }
 dialoguer = "0.12.0"
 keyring = { version = "3.6.3", features = ["apple-native", "windows-native", "linux-native"] }
-thiserror = "1.0"
-aes-gcm = { version = "0.10.1", features = ["aes"] }
-rand_core = { version = "0.6.4", features = ["getrandom"] }
-rand_chacha = "0.3.1"
+thiserror = "2.0"
+aes-gcm = { version = "0.10.3", features = ["aes"] }
+rand_core = { version = "0.9.3" }
+rand_chacha = "0.10.0-rc.1"
 chacha20poly1305 = "0.10.1"
 serde = { version = "1.0", features = ["derive"] }
-toml = "0.8.12"
-dirs = "5.0.1"
-sha2 = "0.10.8"
+toml = "0.9.10"
+dirs = "6.0.0"
+sha2 = "0.10.9"
 totp-rs = "5.7.0"
-indicatif = "0.17.8"
+indicatif = "0.18.3"
