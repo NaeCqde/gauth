@@ -1,16 +1,16 @@
-use std::path::PathBuf;
+use aes_gcm::{
+    Aes256Gcm, Key, Nonce,
+    aead::{Aead, KeyInit, OsRng},
+};
 use dialoguer::{Password, theme::ColorfulTheme};
 use keyring::Entry;
-use aes_gcm::{
-    aead::{Aead, KeyInit, OsRng},
-    Aes256Gcm, Key, Nonce
-};
 use rand_core::RngCore;
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::{Read, Write};
-use sha2::{Sha256, Digest};
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Credential {
@@ -46,7 +46,7 @@ impl SecretManager {
             return Err(super::error::AppError::DecryptionError);
         }
         let (encrypted_toml, stored_nonce) = contents.split_at(contents.len() - 12);
-        
+
         let decrypted_toml_bytes = decrypt_data(key_bytes, encrypted_toml, stored_nonce)?;
         let decrypted_toml_str = String::from_utf8(decrypted_toml_bytes)
             .map_err(|_| super::error::AppError::DecryptionError)?;
@@ -57,7 +57,9 @@ impl SecretManager {
 
     pub fn save_secrets(&self, master_password: &str) -> Result<(), super::error::AppError> {
         let path = get_config_file_path()?;
-        let parent_dir = path.parent().ok_or(super::error::AppError::ConfigDirNotFound)?;
+        let parent_dir = path
+            .parent()
+            .ok_or(super::error::AppError::ConfigDirNotFound)?;
         fs::create_dir_all(parent_dir)?;
 
         let toml_string = toml::to_string(&self)?;
@@ -74,7 +76,14 @@ impl SecretManager {
     }
 
     pub fn add_credential(&mut self, name: String, ciphertext: Vec<u8>, nonce: Vec<u8>) {
-        self.credentials.insert(name.clone(), Credential { name, ciphertext, nonce });
+        self.credentials.insert(
+            name.clone(),
+            Credential {
+                name,
+                ciphertext,
+                nonce,
+            },
+        );
     }
 
     pub fn get_credential(&self, name: &str) -> Option<&Credential> {
@@ -106,7 +115,7 @@ pub fn get_master_password() -> Result<String, super::error::AppError> {
             let password = String::from_utf8(password_bytes)
                 .map_err(|_| super::error::AppError::DecryptionError)?;
             Ok(password)
-        },
+        }
         Err(keyring::Error::NoEntry) => {
             println!("Master password not found. Please set one up.");
             let password = Password::with_theme(&ColorfulTheme::default())
@@ -126,7 +135,10 @@ pub fn get_master_password() -> Result<String, super::error::AppError> {
     }
 }
 
-pub fn encrypt_data(master_key_material: &[u8], data: &[u8]) -> Result<(Vec<u8>, Vec<u8>), super::error::AppError> {
+pub fn encrypt_data(
+    master_key_material: &[u8],
+    data: &[u8],
+) -> Result<(Vec<u8>, Vec<u8>), super::error::AppError> {
     let mut hasher = Sha256::new();
     hasher.update(master_key_material);
     let key_bytes = hasher.finalize();
@@ -137,12 +149,17 @@ pub fn encrypt_data(master_key_material: &[u8], data: &[u8]) -> Result<(Vec<u8>,
     OsRng.fill_bytes(&mut nonce_bytes);
     let nonce = Nonce::from_slice(&nonce_bytes);
 
-    let ciphertext = cipher.encrypt(nonce, data)
+    let ciphertext = cipher
+        .encrypt(nonce, data)
         .map_err(|_| super::error::AppError::EncryptionError)?;
     Ok((ciphertext, nonce_bytes.to_vec()))
 }
 
-pub fn decrypt_data(master_key_material: &[u8], ciphertext: &[u8], nonce_bytes: &[u8]) -> Result<Vec<u8>, super::error::AppError> {
+pub fn decrypt_data(
+    master_key_material: &[u8],
+    ciphertext: &[u8],
+    nonce_bytes: &[u8],
+) -> Result<Vec<u8>, super::error::AppError> {
     let mut hasher = Sha256::new();
     hasher.update(master_key_material);
     let key_bytes = hasher.finalize();
@@ -151,7 +168,8 @@ pub fn decrypt_data(master_key_material: &[u8], ciphertext: &[u8], nonce_bytes: 
     let cipher = Aes256Gcm::new(key);
     let nonce = Nonce::from_slice(nonce_bytes);
 
-    let plaintext = cipher.decrypt(nonce, ciphertext)
+    let plaintext = cipher
+        .decrypt(nonce, ciphertext)
         .map_err(|_| super::error::AppError::DecryptionError)?;
     Ok(plaintext)
 }

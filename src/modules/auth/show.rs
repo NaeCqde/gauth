@@ -51,9 +51,11 @@ pub fn show(name: String) -> Result<(), AppError> {
                 pb.set_style(default_style.clone()); // Start with default style
 
                 for i in (0..=time_until_next_code).rev() {
-                    if i <= 10 && i > 0 { // Apply red style if 10s or less remain (excluding 0s for message display)
+                    if i <= 10 && i > 0 {
+                        // Apply red style if 10s or less remain (excluding 0s for message display)
                         pb.set_style(red_style.clone());
-                    } else { // Otherwise, ensure default style is used
+                    } else {
+                        // Otherwise, ensure default style is used
                         pb.set_style(default_style.clone());
                     }
 
