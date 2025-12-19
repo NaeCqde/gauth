@@ -10,4 +10,6 @@ pub enum AppError {
     IoError(#[from] std::io::Error),
     #[error("Keyring Error: {0}")]
     KeyringError(#[from] keyring::Error),
+    #[error("Invalid key")]
+    InvalidKey,
 }

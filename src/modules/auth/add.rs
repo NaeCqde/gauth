@@ -17,6 +17,12 @@ pub fn add(name: Option<String>, key: Option<String>) -> Result<(), AppError> {
             .interact()
             .unwrap(),
     };
+    let bin = base32::decode(base32::Alphabet::Rfc4648Lower { padding: true }, &key);
+    if bin.is_none() {
+        return Err(AppError::InvalidKey);
+    }
     let entry = keyring::Entry::new("gauth", &name)?;
+    entry.set_password(&key)?;
+    println!("Successfully added auth: {}", name);
     Ok(())
 }
